@@ -63,9 +63,6 @@ const bpmSlider = document.getElementById("bpmSlider");
 const bpmValue = document.getElementById("bpmValue");
 let bpm = 120;
 
-// Share button setup
-const shareBeatBtn = document.getElementById("shareBeat");
-
 // --- LocalStorage Utils ---
 function getAllBeats() {
   return JSON.parse(localStorage.getItem("drumkit-multibeats") || "{}");
@@ -369,22 +366,3 @@ function playSound(key) {
     }
   }
 }
-
-// Enable Share button when a beat is loaded or recorded
-function updateShareButton() {
-  shareBeatBtn.disabled = recordedNotes.length === 0;
-}
-
-// Call updateShareButton() wherever you update recordedNotes
-
-shareBeatBtn.addEventListener("click", async function () {
-  if (!recordedNotes.length) return alert("No beat to share!");
-  // Save beat to Firestore
-  const docRef = await db.collection("beats").add({
-    notes: recordedNotes,
-    created: new Date().toISOString(),
-  });
-  // Generate shareable URL
-  const url = `${window.location.origin}${window.location.pathname}?beat=${docRef.id}`;
-  prompt("Share this URL:", url);
-});
