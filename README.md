@@ -90,7 +90,7 @@ To enable cloud features:
 Feel free to reach out if you want to collab or offer suggestions!
 
 **Mickey – Computer Science Undergrad**
-📧 [Gmail](mailto:harsh2004mckv@gmail.com)
-🔗 [LinkedIn](www.linkedin.com/in/harsh-kumar-singh-57392b27a)
+📧 [harsh2004mckv@gmail.com](mailto:harsh2004mckv@gmail.com)
+🔗 [LinkedIn](https://www.linkedin.com/in/harsh-kumar-singh-57392b27a)
 
 ---
