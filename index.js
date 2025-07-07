@@ -114,6 +114,10 @@ recordBtn.addEventListener("click", function () {
   recordBtn.disabled = true;
   stopBtn.disabled = false;
   playBtn.disabled = true;
+
+  // Show indicator and style
+  recordingIndicator.style.display = "block";
+  recordBtn.classList.add("recording");
 });
 
 stopBtn.addEventListener("click", function () {
@@ -121,6 +125,10 @@ stopBtn.addEventListener("click", function () {
   recordBtn.disabled = false;
   stopBtn.disabled = true;
   playBtn.disabled = recordedNotes.length === 0;
+
+  // Hide indicator and style
+  recordingIndicator.style.display = "none";
+  recordBtn.classList.remove("recording");
 
   localStorage.setItem("drumkit-beats", JSON.stringify(recordedNotes));
   saveBeatBtn.disabled = !beatNameInput.value || recordedNotes.length === 0;

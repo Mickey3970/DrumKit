@@ -537,3 +537,15 @@ footer:hover {
 html {
   scroll-behavior: smooth;
 }
+
+#record.recording {
+  background: #ff3366 !important;
+  color: #fff !important;
+  animation: blink 1s steps(2, start) infinite;
+  box-shadow: 0 0 16px #ff3366, 0 0 8px #fff;
+}
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
