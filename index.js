@@ -53,6 +53,7 @@ let recordedNotes = [];
 
 const recordBtn = document.getElementById("record");
 const stopBtn = document.getElementById("stop");
+const recordingIndicator = document.getElementById("recording-indicator");
 const playBtn = document.getElementById("play");
 const beatNameInput = document.getElementById("beatName");
 const saveBeatBtn = document.getElementById("saveBeat");
