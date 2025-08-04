@@ -21,7 +21,6 @@ async function loadSounds() {
 loadSounds();
 // --- End Web Audio API Setup ---
 
-// Button click and keypress bindings
 document.querySelectorAll(".drum").forEach((btn) => {
   btn.addEventListener("click", () => {
     const key = btn.innerHTML;
@@ -46,7 +45,7 @@ function buttonAnimation(currentKey) {
   setTimeout(() => activeButton.classList.remove("pressed"), 100);
 }
 
-// Recording setup
+// --- Recording Setup ---
 let isRecording = false;
 let recordStartTime = 0;
 let recordedNotes = [];
@@ -62,10 +61,8 @@ const loadBeatBtn = document.getElementById("loadBeat");
 const deleteBeatBtn = document.getElementById("deleteBeat");
 const bpmSlider = document.getElementById("bpmSlider");
 const bpmValue = document.getElementById("bpmValue");
-let bpm = 120;
-
-// Share button setup
 const shareBeatBtn = document.getElementById("shareBeat");
+let bpm = 120;
 
 // --- LocalStorage Utils ---
 function getAllBeats() {
@@ -92,25 +89,29 @@ function refreshBeatList() {
 }
 // --- End LocalStorage Utils ---
 
-// Page load init
 window.addEventListener("DOMContentLoaded", async function () {
   const params = new URLSearchParams(window.location.search);
   const beatId = params.get("beat");
   if (beatId) {
-    const doc = await db.collection("beats").doc(beatId).get();
-    if (doc.exists) {
-      recordedNotes = doc.data().notes;
-      playBtn.disabled = recordedNotes.length === 0;
-      updateShareButton();
-      alert("Loaded shared beat!");
-    } else {
-      alert("Shared beat not found.");
+    try {
+      const doc = await db.collection("recordings").doc(beatId).get();
+      if (doc.exists) {
+        recordedNotes = doc.data().notes;
+        playBtn.disabled = recordedNotes.length === 0;
+        updateShareButton();
+        alert("Loaded shared beat!");
+      } else {
+        alert("Shared beat not found.");
+      }
+    } catch (error) {
+      console.error("Failed to load shared beat:", error);
+      alert("Could not load beat.");
     }
   }
+
   refreshBeatList();
 });
 
-// Recording
 recordBtn.addEventListener("click", function () {
   isRecording = true;
   recordedNotes = [];
@@ -119,7 +120,6 @@ recordBtn.addEventListener("click", function () {
   stopBtn.disabled = false;
   playBtn.disabled = true;
 
-  // Show indicator and style
   recordingIndicator.style.display = "block";
   recordBtn.classList.add("recording");
 });
@@ -130,7 +130,6 @@ stopBtn.addEventListener("click", function () {
   stopBtn.disabled = true;
   playBtn.disabled = recordedNotes.length === 0;
 
-  // Hide indicator and style
   recordingIndicator.style.display = "none";
   recordBtn.classList.remove("recording");
 
@@ -139,7 +138,6 @@ stopBtn.addEventListener("click", function () {
   updateShareButton();
 });
 
-// Save beat
 beatNameInput.addEventListener("input", function () {
   saveBeatBtn.disabled = !beatNameInput.value || recordedNotes.length === 0;
 });
@@ -155,7 +153,6 @@ saveBeatBtn.addEventListener("click", function () {
   beatNameInput.value = "";
 });
 
-// Load beat
 loadBeatBtn.addEventListener("click", function () {
   const beats = getAllBeats();
   const selected = beatList.value;
@@ -166,7 +163,6 @@ loadBeatBtn.addEventListener("click", function () {
   }
 });
 
-// Delete beat
 deleteBeatBtn.addEventListener("click", function () {
   const selected = beatList.value;
   if (!selected) return alert("Please select a beat to delete.");
@@ -179,14 +175,12 @@ deleteBeatBtn.addEventListener("click", function () {
   localStorage.setItem("drumkit-multibeats", JSON.stringify(beats));
   refreshBeatList();
 
-  // If no beats left, clear recordedNotes and disable play button
   if (beatList.options.length === 0) {
     recordedNotes = [];
     playBtn.disabled = true;
     loadBeatBtn.disabled = true;
     deleteBeatBtn.disabled = true;
   } else {
-    // Optionally, select the first beat after deletion
     beatList.selectedIndex = 0;
     loadBeatBtn.disabled = false;
     deleteBeatBtn.disabled = false;
@@ -195,7 +189,6 @@ deleteBeatBtn.addEventListener("click", function () {
   alert(`Beat "${selected}" deleted.`);
 });
 
-// BPM control
 bpmSlider.addEventListener("input", function () {
   bpm = parseInt(bpmSlider.value);
   bpmValue.textContent = bpm;
@@ -207,7 +200,6 @@ bpmSlider.addEventListener("input", function () {
   }
 });
 
-// Playback logic
 let isPlaying = false;
 let playStartTime = 0;
 let playTimeouts = [];
@@ -253,19 +245,16 @@ playBtn.addEventListener("click", function () {
   playBeatFrom();
 });
 
-// Enhanced Visualizer Setup
+// --- Visualizer Setup ---
 const canvas = document.getElementById("visualizer");
 const ctx = canvas.getContext("2d");
 const analyser = audioContext.createAnalyser();
-
-// Increased FFT size for more bars and better frequency resolution
 analyser.fftSize = 256;
 analyser.smoothingTimeConstant = 0.85;
 const bufferLength = analyser.frequencyBinCount;
 const dataArray = new Uint8Array(bufferLength);
 analyser.connect(audioContext.destination);
 
-// Variables for enhanced visualization
 let previousDataArray = new Uint8Array(bufferLength);
 let smoothedDataArray = new Uint8Array(bufferLength);
 let peakArray = new Uint8Array(bufferLength);
@@ -274,19 +263,15 @@ let peakFallRate = 3;
 function drawVisualizer() {
   requestAnimationFrame(drawVisualizer);
   analyser.getByteFrequencyData(dataArray);
-
-  // Canvas setup
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Create purple/magenta gradient matching your reference
   const gradient = ctx.createLinearGradient(0, canvas.height, 0, 0);
-  gradient.addColorStop(0, "#8B00FF"); // Deep purple at bottom
-  gradient.addColorStop(0.3, "#CC00FF"); // Bright magenta
-  gradient.addColorStop(0.7, "#FF00CC"); // Pink-magenta
-  gradient.addColorStop(1, "#FF66DD"); // Light pink at top
+  gradient.addColorStop(0, "#8B00FF");
+  gradient.addColorStop(0.3, "#CC00FF");
+  gradient.addColorStop(0.7, "#FF00CC");
+  gradient.addColorStop(1, "#FF66DD");
 
-  // Enhanced bar calculation
-  const totalBars = 64; // More bars for better visual density
+  const totalBars = 64;
   const barWidth = Math.max(
     2,
     (canvas.width - (totalBars - 1) * 2) / totalBars
@@ -294,58 +279,39 @@ function drawVisualizer() {
   const startX =
     (canvas.width - (totalBars * barWidth + (totalBars - 1) * 2)) / 2;
 
-  // Process audio data for more dynamic visualization
   for (let i = 0; i < totalBars; i++) {
-    // Map bars to frequency data with emphasis on different ranges
     const dataIndex = Math.floor((i / totalBars) * bufferLength);
     let barHeight = dataArray[dataIndex];
 
-    // Apply different scaling for different frequency ranges
-    if (i < totalBars * 0.2) {
-      // Bass frequencies - emphasize more
-      barHeight = Math.min(255, barHeight * 1.4);
-    } else if (i < totalBars * 0.6) {
-      // Mid frequencies - normal scaling
-      barHeight = barHeight * 1.2;
-    } else {
-      // High frequencies - slightly reduced
-      barHeight = barHeight * 0.9;
-    }
+    if (i < totalBars * 0.2) barHeight = Math.min(255, barHeight * 1.4);
+    else if (i < totalBars * 0.6) barHeight *= 1.2;
+    else barHeight *= 0.9;
 
-    // Smooth the data for less jittery movement
     smoothedDataArray[i] = smoothedDataArray[i] * 0.7 + barHeight * 0.3;
 
-    // Peak detection for more dynamic visualization
     if (smoothedDataArray[i] > peakArray[i]) {
       peakArray[i] = smoothedDataArray[i];
     } else {
       peakArray[i] = Math.max(0, peakArray[i] - peakFallRate);
     }
 
-    // Add some variation to make it more interesting
     const variation = Math.sin(Date.now() * 0.01 + i * 0.5) * 10;
     const finalHeight = Math.max(
       4,
       ((peakArray[i] + variation) / 255) * canvas.height * 0.85
     );
 
-    // Calculate position
     const x = startX + i * (barWidth + 2);
     const y = canvas.height - finalHeight;
 
-    // Draw bar with glow effect
     ctx.save();
-
-    // Glow effect
     ctx.shadowColor = "#FF00FF";
     ctx.shadowBlur = 15;
     ctx.globalAlpha = 0.8;
 
-    // Main bar
     ctx.fillStyle = gradient;
     ctx.fillRect(x, y, barWidth, finalHeight);
 
-    // Add highlight for more depth
     if (finalHeight > 20) {
       ctx.globalAlpha = 0.4;
       ctx.fillStyle = "#FFFFFF";
@@ -355,11 +321,8 @@ function drawVisualizer() {
     ctx.restore();
   }
 
-  // Store current data for next frame
   previousDataArray.set(dataArray);
 }
-
-// Initialize visualizer
 drawVisualizer();
 
 function playSound(key) {
@@ -369,7 +332,6 @@ function playSound(key) {
     source.connect(analyser);
     source.start(0);
 
-    // Record the note if recording
     if (isRecording) {
       recordedNotes.push({
         key: key,
@@ -379,21 +341,29 @@ function playSound(key) {
   }
 }
 
-// Enable Share button when a beat is loaded or recorded
 function updateShareButton() {
   shareBeatBtn.disabled = recordedNotes.length === 0;
 }
 
-// Call updateShareButton() wherever you update recordedNotes
-
+// --- Firestore Share Beat ---
 shareBeatBtn.addEventListener("click", async function () {
   if (!recordedNotes.length) return alert("No beat to share!");
-  // Save beat to Firestore
-  const docRef = await db.collection("beats").add({
-    notes: recordedNotes,
-    created: new Date().toISOString(),
-  });
-  // Generate shareable URL
-  const url = `${window.location.origin}${window.location.pathname}?beat=${docRef.id}`;
-  prompt("Share this URL:", url);
+
+  const ownerKey = crypto.randomUUID();
+
+  try {
+    const docRef = await db.collection("recordings").add({
+      notes: recordedNotes,
+      created: new Date().toISOString(),
+      ownerKey: ownerKey,
+    });
+
+    localStorage.setItem(`ownerKey_${docRef.id}`, ownerKey);
+
+    const url = `${window.location.origin}${window.location.pathname}?beat=${docRef.id}`;
+    prompt("Share this URL:", url);
+  } catch (err) {
+    console.error("Error sharing beat:", err);
+    alert("Could not share beat.");
+  }
 });
