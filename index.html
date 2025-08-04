@@ -56,26 +56,11 @@
       ● Recording...
     </div>
 
-    <script src="index.js"></script>
-    <!-- Firebase App (the core Firebase SDK) -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <!-- Firestore -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-    <script>
-      // Your web app's Firebase configuration
-      const firebaseConfig = {
-        apiKey: "AIzaSyDd00-6y-8gbtyHYz_vK0HXq_W8F0IPgPA",
-        authDomain: "drumkit-12a38.firebaseapp.com",
-        projectId: "drumkit-12a38",
-        storageBucket: "drumkit-12a38.appspot.com",
-        messagingSenderId: "130777305559",
-        appId: "1:130777305559:web:d2da513d3ce13c92083b92",
-        measurementId: "G-887B5WXC8L",
-      };
-      // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
-      const db = firebase.firestore();
-    </script>
     <footer>!Made by HKS!</footer>
+    <!-- Firebase scripts FIRST -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <!-- Your JS LAST -->
+    <script src="index.js"></script>
   </body>
 </html>
