@@ -367,3 +367,20 @@ shareBeatBtn.addEventListener("click", async function () {
     alert("Could not share beat.");
   }
 });
+
+// --- Firebase Initialization ---
+const firebaseConfig = {
+  apiKey: "AIzaSyDd00-6y-8gbtyHYz_vK0HXq_W8F0IPgPA",
+  authDomain: "drumkit-12a38.firebaseapp.com",
+  databaseURL:
+    "https://drumkit-12a38-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "drumkit-12a38",
+  storageBucket: "drumkit-12a38.firebasestorage.app",
+  messagingSenderId: "130777305559",
+  appId: "1:130777305559:web:d2da513d3ce13c92083b92",
+  measurementId: "G-887B5WXC8L",
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+// --- End Firebase Initialization ---
