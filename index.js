@@ -375,7 +375,7 @@ const firebaseConfig = {
   databaseURL:
     "https://drumkit-12a38-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "drumkit-12a38",
-  storageBucket: "drumkit-12a38.firebasestorage.app",
+  storageBucket: "drumkit-12a38.appspot.com", // <-- FIXED HERE
   messagingSenderId: "130777305559",
   appId: "1:130777305559:web:d2da513d3ce13c92083b92",
   measurementId: "G-887B5WXC8L",
